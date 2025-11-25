@@ -5,7 +5,6 @@ const web3Service = new Web3Service();
 let currentView = 'home';
 let editingCertificateId = null;
 
-// Initialize the app
 document.querySelector("#app").innerHTML = `
   <div class="container">
     <header>
@@ -132,14 +131,12 @@ document.querySelector("#app").innerHTML = `
   </div>
 `;
 
-// Event listeners
 document.getElementById('connect-wallet-btn')?.addEventListener('click', connectWallet);
 document.getElementById('connect-contract-btn')?.addEventListener('click', connectContract);
 document.getElementById('certificate-form')?.addEventListener('submit', handleCertificateSubmit);
 document.getElementById('verify-btn')?.addEventListener('click', verifyCertificate);
 document.getElementById('cancel-edit-btn')?.addEventListener('click', cancelEdit);
 
-// Navigation
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', (e) => {
     const view = e.target.dataset.view;
@@ -180,7 +177,7 @@ async function connectContract() {
 
 async function handleCertificateSubmit(e) {
   e.preventDefault();
-  
+
   const formData = {
     issuerName: document.getElementById('issuer-name').value,
     receivingName: document.getElementById('receiving-name').value,
@@ -194,7 +191,7 @@ async function handleCertificateSubmit(e) {
 
   try {
     showNotification('Transaction pending...', 'info');
-    
+
     if (editingCertificateId) {
       await web3Service.updateCertificate(editingCertificateId, formData);
       showNotification('Certificate updated successfully!', 'success');
@@ -202,7 +199,7 @@ async function handleCertificateSubmit(e) {
       await web3Service.createCertificate(formData);
       showNotification('Certificate created successfully!', 'success');
     }
-    
+
     document.getElementById('certificate-form').reset();
     editingCertificateId = null;
     switchView('view');
@@ -216,16 +213,16 @@ async function loadCertificates() {
   try {
     const address = await web3Service.getCurrentAddress();
     const certIds = await web3Service.getUserCertificates(address);
-    
+
     const listContainer = document.getElementById('certificates-list');
-    
+
     if (certIds.length === 0) {
       listContainer.innerHTML = '<p>No certificates found. Create your first certificate!</p>';
       return;
     }
 
     listContainer.innerHTML = '<p class="loading">Loading...</p>';
-    
+
     const certificates = await Promise.all(
       certIds.map(id => web3Service.getCertificate(id))
     );
@@ -251,7 +248,7 @@ async function loadCertificates() {
       </div>
     `).join('');
   } catch (error) {
-    document.getElementById('certificates-list').innerHTML = 
+    document.getElementById('certificates-list').innerHTML =
       '<p class="error">Error loading certificates: ' + error.message + '</p>';
   }
 }
@@ -266,7 +263,7 @@ async function verifyCertificate() {
   try {
     const isValid = await web3Service.validateCertificate(certId);
     const cert = await web3Service.getCertificate(certId);
-    
+
     const resultDiv = document.getElementById('verification-result');
     resultDiv.innerHTML = `
       <div class="verification-card ${isValid ? 'valid' : 'invalid'}">
@@ -291,7 +288,7 @@ async function editCertificate(id) {
   try {
     const cert = await web3Service.getCertificate(id);
     editingCertificateId = id;
-    
+
     document.getElementById('issuer-name').value = cert.issuerName;
     document.getElementById('receiving-name').value = cert.receivingName;
     document.getElementById('issuer-org').value = cert.issuerOrg;
@@ -300,7 +297,7 @@ async function editCertificate(id) {
     document.getElementById('expiration-date').value = cert.expirationDate;
     document.getElementById('certificate-type').value = cert.certificateType;
     document.getElementById('description').value = cert.description;
-    
+
     switchView('create');
   } catch (error) {
     showNotification('Error loading certificate: ' + error.message, 'error');
@@ -331,7 +328,7 @@ function cancelEdit() {
 
 function switchView(view) {
   currentView = view;
-  
+
   // Update nav tabs
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -339,14 +336,14 @@ function switchView(view) {
       tab.classList.add('active');
     }
   });
-  
+
   // Update views
   document.querySelectorAll('.view').forEach(v => {
     v.style.display = 'none';
   });
-  
+
   document.getElementById(`${view}-view`).style.display = 'block';
-  
+
   // Load data if needed
   if (view === 'view') {
     loadCertificates();
@@ -368,7 +365,7 @@ function showNotification(message, type = 'info') {
   const notification = document.getElementById('notification');
   notification.textContent = message;
   notification.className = `notification ${type} show`;
-  
+
   setTimeout(() => {
     notification.classList.remove('show');
   }, 3000);

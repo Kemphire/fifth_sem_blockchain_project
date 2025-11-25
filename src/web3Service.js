@@ -9,9 +9,9 @@ const CONTRACT_ABI = [
   "function validateCertificate(uint256 _id) public view returns (bool)",
   "function getUserCertificates(address _user) public view returns (uint256[])",
   "function getCertificateCount() public view returns (uint256)",
-  "event CertificateCreated(uint256 indexed id, address indexed creator, string issuerName, string receivingName)",
-  "event CertificateUpdated(uint256 indexed id, address indexed updater)",
-  "event CertificateDeleted(uint256 indexed id, address indexed deleter)"
+  // "event CertificateCreated(uint256 indexed id, address indexed creator, string issuerName, string receivingName)",
+  // "event CertificateUpdated(uint256 indexed id, address indexed updater)",
+  // "event CertificateDeleted(uint256 indexed id, address indexed deleter)"
 ];
 
 class Web3Service {
